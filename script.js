@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+   // ปุ่มหยุดเพลง
+  stopMusicBtn.addEventListener('click', stopBackgroundMusic);
+});
+
   btn.addEventListener('click', async () => {
     if (!audioContext) {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -84,7 +88,3 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('เกิดข้อผิดพลาดในการโหลดรูปภาพ');
     };
   });
-
-  // ปุ่มหยุดเพลง
-  stopMusicBtn.addEventListener('click', stopBackgroundMusic);
-});
