@@ -124,9 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  window.onload = () => {
-    localStorage.removeItem('usedCharacters');
-  };
+// window.onload = () => {
+//   localStorage.removeItem('usedCharacters');
+// };
+
 
  // document.getElementById('reset-btn').addEventListener('click', () => {
 //     localStorage.removeItem('usedCharacters');
