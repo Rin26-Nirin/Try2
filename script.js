@@ -20,9 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ปุ่มหยุดเพลง
-  stopMusicBtn.addEventListener('click', stopBackgroundMusic);
-
   // ฟังก์ชันโหลดเสียง
   async function loadSounds() {
     try {
@@ -123,4 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('เกิดข้อผิดพลาดในการโหลดรูปภาพ');
     };
   });
+
+  // ปุ่มหยุดเพลง
+  stopMusicBtn.addEventListener('click', stopBackgroundMusic);
 });
