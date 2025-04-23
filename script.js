@@ -6,9 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('scratch-container');
   const stopMusicBtn = document.getElementById('stop-music-btn');
 
-  // ส่วนที่เหลือของโค้ด
+  let audioContext;
+  let scratchBuffer, successBuffer, bgMusicBuffer;
+  let scratchSource = null;
+  let bgMusicSource = null;
 
-   function stopBackgroundMusic() {
+  // ฟังก์ชันหยุดเพลงพื้นหลัง
+  function stopBackgroundMusic() {
     if (bgMusicSource) {
       bgMusicSource.stop();
       bgMusicSource.disconnect();
@@ -16,10 +20,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-   // ปุ่มหยุดเพลง
+  // ปุ่มหยุดเพลง
   stopMusicBtn.addEventListener('click', stopBackgroundMusic);
-});
 
+  // ฟังก์ชันโหลดเสียง
+  async function loadSounds() {
+    try {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+      const scratchResponse = await fetch('sound/scratch.mp3');
+      const scratchArrayBuffer = await scratchResponse.arrayBuffer();
+      scratchBuffer = await audioContext.decodeAudioData(scratchArrayBuffer);
+
+      const successResponse = await fetch('sound/success.wav');
+      const successArrayBuffer = await successResponse.arrayBuffer();
+      successBuffer = await audioContext.decodeAudioData(successArrayBuffer);
+
+      const bgMusicResponse = await fetch('sound/background-music.mp3');
+      const bgMusicArrayBuffer = await bgMusicResponse.arrayBuffer();
+      bgMusicBuffer = await audioContext.decodeAudioData(bgMusicArrayBuffer);
+    } catch (err) {
+      console.error("โหลดเสียงไม่สำเร็จ:", err);
+    }
+  }
+
+  // ฟังก์ชันเล่นเพลงพื้นหลัง
+  function playBackgroundMusic() {
+    if (!bgMusicBuffer || bgMusicSource) return;
+    bgMusicSource = audioContext.createBufferSource();
+    bgMusicSource.buffer = bgMusicBuffer;
+    bgMusicSource.loop = true;
+    bgMusicSource.connect(audioContext.destination);
+    bgMusicSource.start(0);
+  }
+
+  // เมื่อกดปุ่มเริ่มเกม
   btn.addEventListener('click', async () => {
     if (!audioContext) {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -88,3 +123,4 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('เกิดข้อผิดพลาดในการโหลดรูปภาพ');
     };
   });
+});
