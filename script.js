@@ -8,6 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ส่วนที่เหลือของโค้ด
 
+   function stopBackgroundMusic() {
+    if (bgMusicSource) {
+      bgMusicSource.stop();
+      bgMusicSource.disconnect();
+      bgMusicSource = null;
+    }
+  }
+
   btn.addEventListener('click', async () => {
     if (!audioContext) {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
