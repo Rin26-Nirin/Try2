@@ -128,10 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem('usedCharacters');
   };
 
-  document.getElementById('reset-btn').addEventListener('click', () => {
-    localStorage.removeItem('usedCharacters');
-    window.location.reload();
-  });
+ // document.getElementById('reset-btn').addEventListener('click', () => {
+//     localStorage.removeItem('usedCharacters');
+//     window.location.reload();
+// });
+
 
   btn.addEventListener('click', async () => {
     if (!audioContext) {
