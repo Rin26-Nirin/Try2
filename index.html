@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>เกมขูดดูตัวละคร</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>ขูดดูว่าคุณได้ตัวละครอะไร</h1>
+  <button id="reveal-btn">กดเพื่อสุ่มตัวละครของคุณ</button>
+  <button id="reset-btn">รีเซ็ตเกม</button>
+  <button id="stop-music-btn">Stop Music</button>
+
+  <div id="scratch-container">
+    <img id="character-img" src="" alt="character" style="display:none; z-index:1;" />
+    <canvas id="canvas2" style="z-index:2; display:none;"></canvas>
+    <canvas id="canvas1" style="z-index:3; display:none;"></canvas>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
