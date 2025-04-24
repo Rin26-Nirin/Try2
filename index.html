@@ -3,17 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>เกมขูดดูตัวละคร</title>
+  <title>เกมขูดสุ่มตัวละคร</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- ป้องกัน favicon 404 -->
+  <!-- ป้องกัน error favicon -->
+  <link rel="icon" href="data:,">
 </head>
 <body>
-  <h1>ขูดดูว่าคุณได้ตัวละครอะไร</h1>
-  <button id="reveal-btn">กดเพื่อสุ่มตัวละครของคุณ</button>
-  <button id="stop-music-btn">หยุดเสียงเพลง</button>
+  <div class="container">
+    <h1>เกมขูดภาพสุ่มตัวละคร</h1>
+    
+    <!-- ปุ่มเริ่มสุ่ม -->
+    <button id="randomize-btn">สุ่มตัวละคร</button>
 
-  <div id="scratch-container">
-    <img id="character-img" src="" alt="character" style="display:none;" />
-    <canvas id="canvas2" style="display:none;"></canvas>
-    <canvas id="canvas1" style="display:none;"></canvas>
+    <!-- ปุ่มรีเซ็ต LocalStorage -->
+    <button id="reset-btn">รีเซ็ตตัวละคร</button>
+
+    <!-- พื้นที่ขูด -->
+    <div id="scratch-area" style="margin-top: 20px;"></div>
+
+    <!-- ข้อความแจ้งผล -->
+    <p id="message"></p>
   </div>
+
+  <script src="script.js"></script>
+  <script>
+    // รีเซ็ต localStorage เมื่อคลิกปุ่มรีเซ็ต
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      localStorage.removeItem('usedCharacters');
+      alert('รีเซ็ตตัวละครเรียบร้อยแล้ว! ✨');
+      location.reload(); // รีโหลดหน้าเว็บเพื่อให้ระบบเริ่มใหม่
+    });
+  </script>
+</body>
+</html>
