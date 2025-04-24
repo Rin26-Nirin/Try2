@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     'https://i.pinimg.com/474x/ce/04/a6/ce04a661085ce8fb71125e7d2d07ba18.jpg'
   ];
 
-  let audioContext, bgMusicBuffer, scratchBuffer, scratchSource, bgMusicSource;
+  let audioContext, bgMusicBuffer, scratchBuffer, successBuffer;
+  let scratchSource, bgMusicSource;
   let isDrawing = false;
   let ctx1, ctx2;
   let stage = 1;
@@ -112,15 +113,19 @@ document.addEventListener('DOMContentLoaded', () => {
       if (stage === 3) {
         img.style.display = "block";
         stopScratchSound();
+        playSuccessSound();
       }
     }
   }
 
   async function loadSounds() {
-    const bgMusicRes = await fetch('bgmusic.mp3');
-    const scratchRes = await fetch('scratch.mp3');
+    const bgMusicRes = await fetch('sound/background-music.mp3');
+    const scratchRes = await fetch('sound/scratch.mp3');
+    const successRes = await fetch('sound/success.wav');
+
     bgMusicBuffer = await audioContext.decodeAudioData(await bgMusicRes.arrayBuffer());
     scratchBuffer = await audioContext.decodeAudioData(await scratchRes.arrayBuffer());
+    successBuffer = await audioContext.decodeAudioData(await successRes.arrayBuffer());
   }
 
   function playBackgroundMusic() {
@@ -155,5 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
       scratchSource.disconnect();
       scratchSource = null;
     }
+  }
+
+  function playSuccessSound() {
+    if (!successBuffer) return;
+    const successSource = audioContext.createBufferSource();
+    successSource.buffer = successBuffer;
+    successSource.connect(audioContext.destination);
+    successSource.start(0);
   }
 });
