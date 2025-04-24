@@ -9,11 +9,10 @@ body {
   position: relative;
   width: 80%;
   max-width: 400px;
-  height: 500px; /* ตั้งค่าความสูงให้แน่นอน */
+  height: 500px;
   margin: 20px auto;
   border-radius: 12px;
   overflow: hidden;
-  display: block; /* ตรวจสอบให้ container สามารถแสดงผลได้ */
 }
 
 #scratch-container img,
@@ -42,15 +41,14 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* ปรับแต่งสำหรับมือถือ */
 @media (max-width: 600px) {
   #scratch-container {
-    width: 90%;  /* ปรับให้เหมาะสมกับหน้าจอเล็ก */
-    height: 300px; /* ปรับความสูงให้เหมาะสมกับมือถือ */
+    width: 90%;
+    height: 300px;
   }
 
   button {
-    width: 100%; /* ปรับให้ปุ่มเต็มความกว้าง */
+    width: 100%;
     padding: 16px 0;
     font-size: 18px;
   }
