@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let usedCharacters = JSON.parse(localStorage.getItem('usedCharacters')) || [];
     if (usedCharacters.length >= images.length) {
       alert("ไม่มีตัวละครให้สุ่มแล้วนะ!");
+      btn.disabled = false;
       return;
     }
 
@@ -41,12 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
       randomImg = images[Math.floor(Math.random() * images.length)];
     } while (usedCharacters.includes(randomImg));
 
-    usedCharacters.push(randomImg);
-    localStorage.setItem('usedCharacters', JSON.stringify(usedCharacters));
-
     img.style.display = "none";
     img.src = randomImg;
+
     img.onload = () => {
+      // บันทึกหลังโหลดเสร็จเท่านั้น
+      usedCharacters.push(randomImg);
+      localStorage.setItem('usedCharacters', JSON.stringify(usedCharacters));
+
       canvas1.style.display = "block";
       canvas2.style.display = "block";
       setupCanvas(canvas1, '#bbb');
@@ -78,6 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         });
       });
+    };
+
+    img.onerror = () => {
+      alert("โหลดรูปภาพตัวละครไม่สำเร็จ ลองใหม่อีกครั้งนะ");
+      btn.disabled = false;
     };
   });
 
