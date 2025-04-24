@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ['mousedown', 'touchstart'].forEach(evt => {
         [canvas1, canvas2].forEach(c => c.addEventListener(evt, () => {
           isDrawing = true;
-          playScratchLoop(); // เล่นเสียงขูดครั้งแรก
+          playScratchLoop();
         }));
       });
 
@@ -82,9 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function setupCanvas(canvas, fillColor = '#ccc') {
+    // อ่านขนาดจริงที่แสดงบนหน้าจอ
+    const { width, height } = canvas.getBoundingClientRect();
+    canvas.width = width;
+    canvas.height = height;
+
     const ctx = canvas.getContext('2d');
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
     ctx.fillStyle = fillColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     return ctx;
@@ -149,6 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!scratchBuffer || scratchSource) return;
     scratchSource = audioContext.createBufferSource();
     scratchSource.buffer = scratchBuffer;
+    scratchSource.loop = true;
     scratchSource.connect(audioContext.destination);
     scratchSource.start(0);
   }
