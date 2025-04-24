@@ -37,18 +37,18 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    let randomImg;
-    do {
-      randomImg = images[Math.floor(Math.random() * images.length)];
-    } while (usedCharacters.includes(randomImg));
+   let selectedImage;
+do {
+  selectedImage = images[Math.floor(Math.random() * images.length)];
+} while (usedCharacters.includes(selectedImage));
 
-    img.style.display = "none";
-    img.src = randomImg;
+img.style.display = "none";
+img.src = `${selectedImage}?v=${Date.now()}`;
 
-    img.onload = () => {
-      // บันทึกหลังโหลดเสร็จเท่านั้น
-      usedCharacters.push(randomImg);
-      localStorage.setItem('usedCharacters', JSON.stringify(usedCharacters));
+img.onload = () => {
+  usedCharacters.push(selectedImage);
+  localStorage.setItem('usedCharacters', JSON.stringify(usedCharacters));
+
 
       canvas1.style.display = "block";
       canvas2.style.display = "block";
