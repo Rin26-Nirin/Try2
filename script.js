@@ -52,8 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
       setupCanvas(canvas1, '#bbb');
       setupCanvas(canvas2, '#888');
 
-      ctx1 = canvas1.getContext('2d');
-      ctx2 = canvas2.getContext('2d');
+      ctx1 = canvas1.getContext('2d', { willReadFrequently: true });
+      ctx2 = canvas2.getContext('2d', { willReadFrequently: true });
 
       stage = 1;
 
@@ -82,12 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function setupCanvas(canvas, fillColor = '#ccc') {
-    // อ่านขนาดจริงที่แสดงบนหน้าจอ
     const { width, height } = canvas.getBoundingClientRect();
     canvas.width = width;
     canvas.height = height;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     ctx.fillStyle = fillColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     return ctx;
