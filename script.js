@@ -3,9 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const img = document.getElementById('character-img');
   const canvas1 = document.getElementById('canvas1');
   const canvas2 = document.getElementById('canvas2');
-  const container = document.getElementById('scratch-container');
   const stopMusicBtn = document.getElementById('stop-music-btn');
-
   const images = [
     'https://i.pinimg.com/736x/5d/9c/1b/5d9c1baf737a98435be4d841ae002381.jpg',
     'https://i.pinimg.com/736x/4a/9d/1b/4a9d1b42f029b1f015d0994040c92f9b.jpg',
@@ -15,25 +13,23 @@ document.addEventListener('DOMContentLoaded', () => {
     'https://i.pinimg.com/474x/ce/04/a6/ce04a661085ce8fb71125e7d2d07ba18.jpg'
   ];
 
-  let audioContext;
-  let bgMusicSource = null;
-  
-  // เพิ่มฟังก์ชันอื่นๆ ที่จำเป็น
+  let audioContext, bgMusicBuffer, scratchBuffer, scratchSource, bgMusicSource;
+  let isDrawing = false;
+  let ctx1, ctx2;
+  let stage = 1;
 
-  // ปุ่มหยุดเพลง
   stopMusicBtn.addEventListener('click', stopBackgroundMusic);
 
   btn.addEventListener('click', async () => {
     if (!audioContext) {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      await loadSounds(); // โหลดเสียง
-      playBackgroundMusic(); // เริ่มเพลงพื้นหลัง
+      await loadSounds();
+      playBackgroundMusic();
     }
 
     btn.disabled = true;
-    let usedCharacters = JSON.parse(localStorage.getItem('usedCharacters')) || [];
-    console.log("ค่าที่เก็บใน localStorage ตอนนี้:", usedCharacters);
 
+    let usedCharacters = JSON.parse(localStorage.getItem('usedCharacters')) || [];
     if (usedCharacters.length >= images.length) {
       alert("ไม่มีตัวละครให้สุ่มแล้วนะ!");
       return;
@@ -47,50 +43,94 @@ document.addEventListener('DOMContentLoaded', () => {
     usedCharacters.push(randomImg);
     localStorage.setItem('usedCharacters', JSON.stringify(usedCharacters));
 
+    img.style.display = "none";
     img.src = randomImg;
-
     img.onload = () => {
-      console.log('ภาพโหลดเสร็จแล้ว:', img.src);
       canvas1.style.display = "block";
       canvas2.style.display = "block";
-      img.style.display = "block";
-      setupCanvas(canvas1);
+      setupCanvas(canvas1, '#bbb');
+      setupCanvas(canvas2, '#888');
 
-      // เริ่มการขูด
-      requestAnimationFrame(() => {
-        ctx2 = setupCanvas(canvas2, '#888');
-        ctx1 = setupCanvas(canvas1, '#bbb');
-        stage = 1;
-        console.log('แสดง canvas แล้ว');
+      ctx1 = canvas1.getContext('2d');
+      ctx2 = canvas2.getContext('2d');
 
-        ['mousedown', 'touchstart'].forEach(evt => {
-          [canvas1, canvas2].forEach(c => c.addEventListener(evt, () => {
-            isDrawing = true;
-            playScratchLoop();
-          }));
-        });
+      stage = 1;
 
-        ['mouseup', 'touchend'].forEach(evt => {
-          [canvas1, canvas2].forEach(c => c.addEventListener(evt, () => {
-            isDrawing = false;
-            stopScratchSound();
-          }));
-        });
+      ['mousedown', 'touchstart'].forEach(evt => {
+        [canvas1, canvas2].forEach(c => c.addEventListener(evt, () => {
+          isDrawing = true;
+          playScratchLoop();
+        }));
+      });
 
-        ['mousemove', 'touchmove'].forEach(evt => {
-          [canvas1, canvas2].forEach((c, i) => {
-            c.addEventListener(evt, e => {
-              if (stage === i + 1) handleScratch(e, c, i === 0 ? ctx1 : ctx2, i + 1);
-            });
+      ['mouseup', 'touchend'].forEach(evt => {
+        [canvas1, canvas2].forEach(c => c.addEventListener(evt, () => {
+          isDrawing = false;
+          stopScratchSound();
+        }));
+      });
+
+      ['mousemove', 'touchmove'].forEach(evt => {
+        [canvas1, canvas2].forEach((c, i) => {
+          c.addEventListener(evt, e => {
+            if (stage === i + 1) handleScratch(e, c, i === 0 ? ctx1 : ctx2, i + 1);
           });
         });
       });
     };
-
-    img.onerror = () => {
-      console.error('เกิดข้อผิดพลาดในการโหลดรูปภาพ');
-    };
   });
+
+  function setupCanvas(canvas, fillColor = '#ccc') {
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    ctx.fillStyle = fillColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    return ctx;
+  }
+
+  function handleScratch(e, canvas, ctx, stageNumber) {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    if (!isDrawing) return;
+
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x, y, 20, 0, Math.PI * 2);
+    ctx.fill();
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let cleared = 0;
+    for (let i = 3; i < imageData.data.length; i += 4) {
+      if (imageData.data[i] < 128) cleared++;
+    }
+
+    const clearedPercent = cleared / (canvas.width * canvas.height) * 100;
+    if (clearedPercent > 50 && stage === stageNumber) {
+      stage++;
+      if (stage === 3) {
+        img.style.display = "block";
+        stopScratchSound();
+      }
+    }
+  }
+
+  async function loadSounds() {
+    const bgMusicRes = await fetch('bgmusic.mp3');
+    const scratchRes = await fetch('scratch.mp3');
+    bgMusicBuffer = await audioContext.decodeAudioData(await bgMusicRes.arrayBuffer());
+    scratchBuffer = await audioContext.decodeAudioData(await scratchRes.arrayBuffer());
+  }
+
+  function playBackgroundMusic() {
+    if (!bgMusicBuffer) return;
+    bgMusicSource = audioContext.createBufferSource();
+    bgMusicSource.buffer = bgMusicBuffer;
+    bgMusicSource.loop = true;
+    bgMusicSource.connect(audioContext.destination);
+    bgMusicSource.start(0);
+  }
 
   function stopBackgroundMusic() {
     if (bgMusicSource) {
@@ -100,11 +140,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function loadSounds() {
-    // โหลดเสียงต่างๆ
+  function playScratchLoop() {
+    if (!scratchBuffer || scratchSource) return;
+    scratchSource = audioContext.createBufferSource();
+    scratchSource.buffer = scratchBuffer;
+    scratchSource.loop = true;
+    scratchSource.connect(audioContext.destination);
+    scratchSource.start(0);
   }
 
-  function playBackgroundMusic() {
-    // เล่นเพลงพื้นหลัง
+  function stopScratchSound() {
+    if (scratchSource) {
+      scratchSource.stop();
+      scratchSource.disconnect();
+      scratchSource = null;
+    }
   }
 });
