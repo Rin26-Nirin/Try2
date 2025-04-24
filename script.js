@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ['mousedown', 'touchstart'].forEach(evt => {
         [canvas1, canvas2].forEach(c => c.addEventListener(evt, () => {
           isDrawing = true;
-          playScratchLoop();
+          playScratchLoop(); // เล่นเสียงขูดครั้งแรก
         }));
       });
 
@@ -149,7 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!scratchBuffer || scratchSource) return;
     scratchSource = audioContext.createBufferSource();
     scratchSource.buffer = scratchBuffer;
-    scratchSource.loop = true;
     scratchSource.connect(audioContext.destination);
     scratchSource.start(0);
   }
